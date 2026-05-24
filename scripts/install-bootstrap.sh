@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Bootstrap Clified (PyPI) — source a partir de install.sh dos projectos.
-# Uso:
+# Clified bootstrap (PyPI) — source from project install.sh
+# Usage:
 #   source "$(dirname "$0")/scripts/install-bootstrap.sh"
 #   clified_bootstrap ai2print "$@"
 
@@ -10,7 +10,7 @@ clified_resolve_python() {
       printf '%s\n' "${PYTHON_CMD}"
       return 0
     fi
-    echo "PYTHON_CMD=${PYTHON_CMD} não tem pip funcional." >&2
+    echo "PYTHON_CMD=${PYTHON_CMD} has no working pip." >&2
     return 1
   fi
 
@@ -22,7 +22,7 @@ clified_resolve_python() {
     return 0
   done
 
-  echo "Nenhum Python com pip encontrado. Instale python3-full ou defina PYTHON_CMD." >&2
+  echo "No Python with pip found. Install python3-full or set PYTHON_CMD." >&2
   return 1
 }
 
@@ -31,7 +31,7 @@ clified_pip_install() {
   if "$py" -m pip install --user --upgrade "$spec"; then
     return 0
   fi
-  echo "A repetir pip com --break-system-packages (PEP 668)…" >&2
+  echo "Retrying pip with --break-system-packages (PEP 668)…" >&2
   "$py" -m pip install --user --break-system-packages --upgrade "$spec"
 }
 
@@ -48,7 +48,7 @@ clified_bootstrap() {
     exec "$py" -m clified "$@"
   fi
 
-  echo "A instalar clified>=${min_ver} via pip (${py})…"
+  echo "Installing clified>=${min_ver} via pip (${py})…"
   clified_pip_install "$py" "clified>=${min_ver}" || return 1
 
   if command -v clified-install &>/dev/null; then

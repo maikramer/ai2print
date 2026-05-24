@@ -1,5 +1,5 @@
 #!/bin/bash
-# Instalação ai2print via Clified (PyPI)
+# Install ai2print via Clified (PyPI)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

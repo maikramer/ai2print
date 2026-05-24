@@ -2,7 +2,7 @@
 name = "stl-repair-gui"
 version = "0.1.0"
 edition = "2021"
-description = "GUI GTK para reparar malhas STL/3MF para impressão 3D"
+description = "GTK GUI to repair STL/3MF meshes for 3D printing"
 
 [dependencies]
 gtk = { package = "gtk4", version = "0.11", features = ["v4_10"] }

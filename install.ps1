@@ -1,4 +1,4 @@
-# Instalação ai2print via Clified (PyPI)
+# Install ai2print via Clified (PyPI)
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -14,7 +14,7 @@ if (-not $py) {
     exit 1
 }
 
-$MinVersion = if ($env:CLIFIED_MIN_VERSION) { $env:CLIFIED_MIN_VERSION } else { "0.4.0" }
+$MinVersion = if ($env:CLIFIED_MIN_VERSION) { $env:CLIFIED_MIN_VERSION } else { "0.4.1" }
 
 if (Get-Command clified-install -ErrorAction SilentlyContinue) {
     & clified-install ai2print @args

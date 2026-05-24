@@ -3,3 +3,6 @@
 **/*.tmp.stl
 __pycache__/
 *.pyc
+
+# Generated on first install from tools.yaml.example
+tools.yaml
