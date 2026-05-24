@@ -6,17 +6,31 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from clified.installer.rust_installer import RustProjectInstaller
-    from clified.logging import Logger
+
+def _ensure_clified_src() -> None:
+    """Garante ``clified/src`` no path (dev local e análise estática)."""
+    repo_root = Path(__file__).resolve().parents[1]
+    for base in (repo_root, *repo_root.parents):
+        src = base / "clified" / "src"
+        if (src / "clified" / "__init__.py").is_file():
+            src_str = str(src)
+            if src_str not in sys.path:
+                sys.path.insert(0, src_str)
+            return
+
+
+_ensure_clified_src()
+
+# Imports após bootstrap do path (monorepo local sem pip install).
+from clified import Logger  # pylint: disable=wrong-import-position
+from clified.installer.rust_installer import (  # pylint: disable=wrong-import-position
+    RustProjectInstaller,
+)
 
 
 def _get_logger() -> Logger:
-    from clified.logging import Logger as ClifiedLogger
-
-    return ClifiedLogger()
+    return Logger()
 
 
 def _default_python() -> str:
@@ -92,10 +106,10 @@ def _write_wrapper(
         return
 
     content = (
-        "#!/bin/bash\n"
-        "# ai2print — gerado por clified\n"
-        f'export STL_REPAIR_ROOT="{root}"\n'
-        f'export STL_REPAIR_PYTHON="{venv_py}"\n'
+        "#!/bin/bash\n" +
+        "# ai2print — gerado por clified\n" +
+        f'export STL_REPAIR_ROOT="{root}"\n' +
+        f'export STL_REPAIR_PYTHON="{venv_py}"\n' +
         f'exec "{bin_src}" "$@"\n'
     )
     wrapper_path.write_text(content, encoding="utf-8")
