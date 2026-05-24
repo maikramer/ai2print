@@ -1,0 +1,10 @@
+[MAIN]
+init-hook=exec("""import sys\nfrom pathlib import Path\nfor start in (Path.cwd(),):\n    for base in (start, *start.parents):\n        for src in (base / 'clified' / 'src', base / 'src'):\n            if (src / 'clified' / '__init__.py').is_file():\n                p = str(src)\n                if p not in sys.path:\n                    sys.path.insert(0, p)\n        venv_lib = base / 'clified' / '.venv' / 'lib'\n        if venv_lib.is_dir():\n            for site in venv_lib.glob('python*/site-packages'):\n                p = str(site)\n                if p not in sys.path:\n                    sys.path.insert(0, p)\n""")
+
+[MESSAGES CONTROL]
+disable=
+    import-outside-toplevel,
+    wrong-import-position,
+
+[FORMAT]
+max-line-length=100

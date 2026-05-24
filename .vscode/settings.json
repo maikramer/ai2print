@@ -1,0 +1,5 @@
+{
+  "python.analysis.extraPaths": ["${workspaceFolder}/../clified/src"],
+  "basedpyright.analysis.extraPaths": ["${workspaceFolder}/../clified/src"],
+  "pylint.args": ["--rcfile=${workspaceFolder}/.pylintrc"]
+}

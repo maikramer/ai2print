@@ -1,0 +1,4 @@
+{
+  "extraPaths": ["../clified/src"],
+  "pythonVersion": "3.10"
+}
