@@ -1,0 +1,30 @@
+[project]
+name = "ai2print"
+version = "0.1.0"
+description = "GUI GTK para reparar malhas STL/3MF"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["clified>=0.4.1", "pylint>=3"]
+
+[tool.pyright]
+extraPaths = ["../clified/src"]
+pythonVersion = "3.10"
+
+[tool.pylint.main]
+init-hook = """
+import sys
+from pathlib import Path
+_start = Path.cwd()
+for base in (_start, *_start.parents):
+    src = base / 'clified' / 'src'
+    if (src / 'clified' / 'logging.py').is_file():
+        sys.path.insert(0, str(src))
+        break
+"""
+
+[tool.pylint.messages_control]
+disable = ["import-outside-toplevel"]
+
+[tool.pylint.design]
+max-line-length = 100

@@ -10,6 +10,13 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from clified.installer.rust_installer import RustProjectInstaller
+    from clified.logging import Logger
+
+
+def _get_logger() -> Logger:
+    from clified.logging import Logger as ClifiedLogger
+
+    return ClifiedLogger()
 
 
 def _default_python() -> str:
@@ -46,10 +53,17 @@ def _release_binary(installer: RustProjectInstaller) -> Path:
     src = installer.release_binary
     if src.is_file():
         return src.resolve()
-    if installer.get_existing_binary():
-        return installer.get_existing_binary().resolve()
+    existing = installer.get_existing_binary()
+    if existing is not None:
+        return existing.resolve()
     msg = f"Binário Rust não encontrado: {src}"
     raise FileNotFoundError(msg)
+
+
+def _cmd_wrapper_path(wrapper_path: Path) -> Path:
+    if wrapper_path.suffix.lower() == ".cmd":
+        return wrapper_path
+    return wrapper_path.with_suffix(".cmd")
 
 
 def _write_wrapper(
@@ -65,7 +79,7 @@ def _write_wrapper(
         wrapper_path.unlink()
 
     if is_windows:
-        cmd_path = wrapper_path if wrapper_path.suffix.lower() == ".cmd" else wrapper_path.with_suffix(".cmd")
+        cmd_path = _cmd_wrapper_path(wrapper_path)
         lines = [
             "@echo off",
             "REM ai2print — gerado por clified",
@@ -89,16 +103,15 @@ def _write_wrapper(
 
 
 def post_install(installer: RustProjectInstaller) -> bool:
-    from clified.logging import Logger
-
-    logger = Logger()
+    """Prepara venv Python, localiza o binário Rust e gera wrappers CLI."""
+    logger = _get_logger()
     root = Path(installer.project_root).resolve()
 
     logger.step("Configurando venv Python (pymeshlab, trimesh…)…")
     try:
         venv_py = _ensure_python_venv(root, _default_python())
-    except Exception as exc:
-        logger.exception(f"Falha ao preparar venv Python: {exc}")
+    except (subprocess.CalledProcessError, OSError) as exc:
+        logger.error(f"Falha ao preparar venv Python: {exc}")
         return False
 
     try:
@@ -116,8 +129,8 @@ def post_install(installer: RustProjectInstaller) -> bool:
             bin_src=bin_src,
             is_windows=installer.is_windows,
         )
-    except Exception as exc:
-        logger.exception(f"Falha ao criar wrapper: {exc}")
+    except OSError as exc:
+        logger.error(f"Falha ao criar wrapper: {exc}")
         return False
 
     for alias in ("stl-repair-gui",):
@@ -132,7 +145,7 @@ def post_install(installer: RustProjectInstaller) -> bool:
                 bin_src=bin_src,
                 is_windows=installer.is_windows,
             )
-        except Exception as exc:
+        except OSError as exc:
             logger.warning(f"Alias {alias}: {exc}")
 
     logger.success(f"Wrapper com STL_REPAIR_ROOT={root}")
