@@ -1,0 +1,16 @@
+# Registo Clified — ai2print (GUI GTK + pipeline Python)
+
+workspace:
+  root: .
+  name: "ai2print"
+
+tools:
+  ai2print:
+    name: "AI2Print"
+    kind: rust
+    folder: .
+    cli_name: ai2print
+    cargo_bin_name: stl-repair-gui
+    description: "GUI GTK para reparar malhas STL/3MF para impressão 3D"
+    extra_aliases: [stl-repair-gui]
+    post_install: clified_install:post_install
